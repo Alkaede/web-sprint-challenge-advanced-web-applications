@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import React from "react";
+import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 
 import Login from "./components/Login";
 import BubblePage from './components/BubblePage';
@@ -7,18 +7,27 @@ import "./styles.scss";
 import ProtectedRoute from "./components/PrivateRoute";
 
 function App() {
+
+  const logout = () => {
+    localStorage.removeItem('token');
+  }
+
   return (
     <Router>
       <div className="App">
         <header>
           Color Picker Sprint Challenge
-          <a data-testid="logoutButton" href="#">logout</a>
+          <Link to ='/' onClick={logout}>Logout</Link>
         </header> 
         
-        <Route exact path="/" component={Login} />
-      </div>
-
-      <ProtectedRoute exact path='/bubble' component={BubblePage}/>
+        <Switch>
+          <Route exact path="/" component={Login} />
+          {/* the routing was so weird that I had to split protected route with the route component stuff */}
+          <ProtectedRoute>
+            <Route exact path='/BubblesPage' component={BubblePage} />
+          </ProtectedRoute>
+        </Switch>
+      </div>      
     </Router>
   );
 }

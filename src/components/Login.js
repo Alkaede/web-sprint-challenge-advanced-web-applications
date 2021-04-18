@@ -1,63 +1,58 @@
-import React from "react";
+import React, {useState} from "react";
 import {axiosWithAuth} from '../helpers/axiosWithAuth';
 import {useHistory} from 'react-router-dom';
 
-// const {push} = useHistory();
-
-class Login extends React.Component{
-  state = {
-    credentials: {
-      username: '',
-      password: ''
-    },
-    error: [],
+const initialValues = {
+  credentials: {
+    username: '',
+    password: '',
   }
-  
+}
 
+const Login = () => {
+  const [login, setLogin] = useState(initialValues)
+  const {push} = useHistory();  
   // make a post request to retrieve a token from the api
   // when you have handled the token, navigate to the BubblePage route
   
-  login = e => {
+  const handleSubmit = e => {
     e.preventDefault();
-    axiosWithAuth().post('/login', this.state.credentials)
+    axiosWithAuth().post('/login', login.credentials)
       .then(res => {
-        // console.log(res.data)
+        console.log(res.data)
         localStorage.setItem('token', res.data.payload)
-        this.props.history.push('/bubble')
+        push('/BubblesPage')
       })
-      .catch(err => {
-        console.error('axiosPost: authError: ', err)
-        this.setState({error: [err]})
-      })
+      .catch(err => console.error('axiosPost: authError: ', err))
   }
   
-   handleChange = e => {
-    this.setState({
+  const handleChange = e => {
+    setLogin({
       credentials: {
-        ...this.state.credentials,
+        ...login.credentials,
         [e.target.name]: e.target.value
       }
     })
   }
 
-  //replace with error state
+  // useEffect(() => {
+    
+  // })
 
-  render(){
-    const { push } = useHistory();
     return (
       <div>
         <h1>Welcome Back to the Bubble App!</h1>
         <div data-testid="loginForm" className="login-form">
           <h2>Login </h2>
-          <form onSubmit={this.login}>
+          <form onSubmit={handleSubmit}>
             <label>
               Username:
               <input 
                 type='text' 
                 name='username' 
-                // placeholder='Username:'
-                value={this.state.credentials.username}
-                onChange={this.handleChange}
+                placeholder='Username:'
+                value={login.credentials.username}
+                onChange={handleChange}
                 data-testid="username"/>
             </label>
             <label>
@@ -65,20 +60,18 @@ class Login extends React.Component{
               <input 
                 type='password' 
                 name='password'
-                // placeholder='Password:'
-                value={this.state.credentials.password}
-                onChange={this.handleChange}
+                placeholder='Password:'
+                value={login.credentials.password}
+                onChange={handleChange}
                 data-testid="password"/>
             </label>
             <button >Login</button>
           </form>
         </div>
   
-        <p data-testid="errorMessage" className="error">{this.error}</p>
+        {/* <p data-testid="errorMessage" className="error">{error}</p> */}
       </div>
     );
-  }
-  
 };
 
 export default Login;
@@ -89,3 +82,11 @@ export default Login;
 //3. MAKE SURE YOUR USERNAME AND PASSWORD INPUTS INCLUDE data-testid="username" and data-testid="password"
 //4. If either the username or password is not entered, display the following words with the p tag provided: Username or Password not valid.
 //5. If the username / password is equal to Lambda School / i<3Lambd4, save that token to localStorage.
+
+// state = {
+//   credentials: {
+//     username: '',
+//     password: ''
+//   },
+//   error: [],
+// }
